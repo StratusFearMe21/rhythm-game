@@ -1,0 +1,9 @@
+:root {
+  --primary: #02b759;
+  --secondary: #76c49c;
+  --common: white;
+  --common-tint: #dfdfdf;
+  --common-tint-dark: #6f6f6f;
+  --text: black;
+  --text-tint: #242424;
+}

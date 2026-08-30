@@ -1,0 +1,71 @@
+*,
+*::before,
+*::after {
+  box-sizing: content-box;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+html,
+body {
+  margin: 0;
+  margin-bottom: 40px;
+}
+
+h1 {
+  color: var(--text);
+  font-size: 3rem;
+  text-wrap-mode: nowrap;
+}
+
+h2 {
+  color: var(--text-tint);
+  font-size: 1.5rem;
+}
+
+h3 {
+  color: var(--text-tint);
+  font-size: 1.35rem;
+}
+
+h4 {
+  color: var(--text-tint);
+  font-size: 1.25rem;
+  margin-block: 10px;
+}
+
+p,
+pre {
+  margin: 0;
+}
+
+[x-cloak] {
+  display: none !important;
+}
+
+.primary {
+  color: var(--primary);
+}
+
+.secondary {
+  color: var(--secondary);
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.center-text {
+  text-align: center;
+}
+
+.spacer {
+  height: 50px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.full-height {
+  height: 100%;
+}

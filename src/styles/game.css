@@ -1,0 +1,93 @@
+.countdown {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.rhythm-input-track {
+  position: fixed;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 400px;
+}
+
+.rhythm-input {
+  width: 50px;
+  height: 50px;
+  padding: 0;
+  border: none;
+  margin: 0;
+  font-size: 3rem;
+  appearance: none;
+}
+
+.combo-counter {
+  position: fixed;
+  top: 50%;
+  left: 100px;
+  transform: translateY(-50%);
+  text-align: center;
+  font-weight: bold;
+  font-size: 1.8rem;
+}
+
+.points-counter {
+  position: fixed;
+  top: 50%;
+  right: 100px;
+  transform: translateY(-50%);
+  text-align: center;
+  font-weight: bold;
+  font-size: 1.8rem;
+}
+
+.game-over-overlay {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 400px;
+  height: 350px;
+  padding: 30px;
+  background-color: var(--common);
+  z-index: 100;
+}
+
+.game-over-overlay h1,
+.game-over-overlay pre {
+  text-align: center;
+}
+
+.game-over-overlay a {
+  display: block;
+  text-align: center;
+  font-weight: bold;
+  color: var(--text);
+}
+
+.game-over-overlay-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  opacity: 0.2;
+}
+
+.note-container {
+  position: fixed;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 400px;
+  height: 100%;
+}
+
+.note {
+  position: absolute;
+  width: 46px;
+  border: 2px solid black;
+}
