@@ -1,26 +1,53 @@
+.background-simplex {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 150%;
+  height: 150%;
+  background-color: var(--text-tint);
+  z-index: -1;
+  transform: translate(-60%, -50%) rotate(10deg);
+}
+
+.background-simplex .node {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-radius: 100%;
+}
+
 .countdown {
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  color: var(--primary);
 }
 
 .rhythm-input-track {
   position: fixed;
-  bottom: 100px;
+  bottom: 50px;
   left: 50%;
   transform: translateX(-50%);
   width: 400px;
 }
 
-.rhythm-input {
+.rhythm-input-track button {
   width: 50px;
   height: 50px;
   padding: 0;
-  border: none;
+  border: 2px solid var(--secondary);
   margin: 0;
   font-size: 3rem;
   appearance: none;
+  color: var(--secondary);
+  background-image: radial-gradient(var(--text), var(--common-tint-dark));
+}
+
+.rhythm-input-track button[pressed] {
+  border: 2px solid var(--primary);
+  color: var(--primary);
+  background-image: radial-gradient(var(--text), var(--common-tint));
 }
 
 .combo-counter {
@@ -31,6 +58,7 @@
   text-align: center;
   font-weight: bold;
   font-size: 1.8rem;
+  color: var(--primary);
 }
 
 .points-counter {
@@ -41,6 +69,7 @@
   text-align: center;
   font-weight: bold;
   font-size: 1.8rem;
+  color: var(--primary);
 }
 
 .game-over-overlay {
@@ -79,15 +108,69 @@
 
 .note-container {
   position: fixed;
-  bottom: 100px;
+  bottom: 120px;
   left: 50%;
   transform: translateX(-50%);
   width: 400px;
   height: 100%;
 }
 
+.timing-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  border-top: 2px solid var(--primary);
+}
+
+.timing-arrow {
+  position: absolute;
+  bottom: 0;
+  width: 30px;
+  height: 30px;
+  fill: var(--secondary);
+}
+
+.timing-arrow[right] {
+  right: -50px;
+  animation: arrow-right 2s ease-in infinite forwards;
+}
+
+.timing-arrow[left] {
+  left: -50px;
+  animation: arrow-left 2s ease-in infinite forwards;
+}
+
 .note {
   position: absolute;
   width: 46px;
-  border: 2px solid black;
+  border: 2px solid var(--common-tint);
+}
+
+@keyframes arrow-right {
+  0% {
+    transform: translate(50%, 45%) rotate(-90deg);
+  }
+
+  50% {
+    transform: translate(-50%, 45%) rotate(-90deg);
+  }
+
+  100% {
+    transform: translate(50%, 45%) rotate(-90deg);
+  }
+}
+
+@keyframes arrow-left {
+  0% {
+    transform: translate(-50%, 45%) rotate(90deg);
+  }
+
+  50% {
+    transform: translate(50%, 45%) rotate(90deg);
+  }
+
+  100% {
+    transform: translate(-50%, 45%) rotate(90deg);
+  }
 }

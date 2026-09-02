@@ -12,7 +12,9 @@
     "round": "bun run src/round-rhythm.ts"
   },
   "dependencies": {
+    "@types/noisejs": "^2.1.0",
     "alpinejs": "^3.16.1",
-    "node-interval-tree": "^2.1.2"
+    "node-interval-tree": "^2.1.2",
+    "noisejs": "^2.1.0"
   }
 }

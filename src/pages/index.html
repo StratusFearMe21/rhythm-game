@@ -4,9 +4,19 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>My Ransom is My Rhythm</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Foldit:wght@100..900&display=swap"
+      rel="stylesheet"
+    />
+
     <link rel="stylesheet" href="/styles/fonts.css" />
-    <link rel="stylesheet" href="/styles/index.css" />
+    <link rel="stylesheet" href="/styles/colors.css" />
+    <link rel="stylesheet" href="/styles/flex.css" />
     <link rel="stylesheet" href="/styles/misc.css" />
+    <link rel="stylesheet" href="/styles/index.css" />
 
     <script defer src="/public/components.js"></script>
     <script
@@ -15,8 +25,29 @@
     ></script>
   </head>
   <body x-data="selectSong">
-    <template x-for="(name, i) in contents.names">
-      <p x-text="name" :class="selected == i ? 'bold' : ''"></p>
-    </template>
+    <div class="background-simplex">
+      <template x-for="(v, i) in backgroundSimplex">
+        <div
+          class="node"
+          :style="{
+            left: `${(i % 25) * 4}%`,
+            top: `${Math.floor(i / 25) * 4}%`,
+            backgroundColor: `color-mix(in srgb, var(--text) ${(1 - v) * 100}%, var(--text-tint) ${v * 100}%)`,
+            transform: `scale(${1 + v})`
+          }"
+        ></div>
+      </template>
+    </div>
+
+    <div class="track-container flex-col flex-space-evenly">
+      <h1>Rhythm is my Ransom</h1>
+      <template x-for="(name, i) in contents.names">
+        <p
+          class="track"
+          x-text="name"
+          :class="selected == i ? 'selected-track' : ''"
+        ></p>
+      </template>
+    </div>
   </body>
 </html>

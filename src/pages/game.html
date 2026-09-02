@@ -4,8 +4,16 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>My Ransom is My Rhythm</title>
-    <link rel="stylesheet" href="/styles/index.css" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Foldit:wght@100..900&display=swap"
+      rel="stylesheet"
+    />
+
     <link rel="stylesheet" href="/styles/fonts.css" />
+    <link rel="stylesheet" href="/styles/colors.css" />
     <link rel="stylesheet" href="/styles/game.css" />
     <link rel="stylesheet" href="/styles/misc.css" />
     <link rel="stylesheet" href="/styles/flex.css" />
@@ -17,6 +25,20 @@
     ></script>
   </head>
   <body x-data="game">
+    <div class="background-simplex">
+      <template x-for="(v, i) in backgroundSimplex">
+        <div
+          class="node"
+          :style="{
+            left: `${(i % 25) * 4}%`,
+            top: `${Math.floor(i / 25) * 4}%`,
+            backgroundColor: `color-mix(in srgb, var(--text) ${(1 - v) * 100}%, var(--text-tint) ${v * 100}%)`,
+            transform: `scale(${1 + v})`
+          }"
+        ></div>
+      </template>
+    </div>
+
     <template x-if="!confirmedStart">
       <h1 class="countdown">Press Any Key to Start</h1>
     </template>
@@ -28,10 +50,10 @@
     </template>
 
     <div class="rhythm-input-track flex-row flex-space-between">
-      <button class="rhythm-input" @click="handleInput('s')">S</button>
-      <button class="rhythm-input" @click="handleInput('f')">F</button>
-      <button class="rhythm-input" @click="handleInput('j')">J</button>
-      <button class="rhythm-input" @click="handleInput('l')">L</button>
+      <button @click="handleInput('s')" :pressed="isPressing('s')">S</button>
+      <button @click="handleInput('f')" :pressed="isPressing('f')">F</button>
+      <button @click="handleInput('j')" :pressed="isPressing('j')">J</button>
+      <button @click="handleInput('l')" :pressed="isPressing('l')">L</button>
     </div>
 
     <pre class="combo-counter" x-text="'COMBO\n' + combo + 'x'"></pre>
@@ -53,8 +75,28 @@
     </div>
 
     <div class="note-container">
+      <div class="timing-bar"></div>
+      <div
+        x-show="countdown > 0"
+        x-transition.duration.500ms
+        class="timing-arrow"
+        right
+        x-data="svgs"
+      >
+        <span x-html="arrow"></span>
+      </div>
+      <div
+        x-show="countdown > 0"
+        x-transition.duration.500ms
+        class="timing-arrow"
+        left
+        x-data="svgs"
+      >
+        <span x-html="arrow"></span>
+      </div>
+
       <template x-for="note in notes">
-        <div class="note" :style="note.style()" x-text="note.index + 1"></div>
+        <div class="note" :style="note.style()"></div>
       </template>
     </div>
   </body>

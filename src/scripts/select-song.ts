@@ -1,3 +1,5 @@
+import { Noise } from "noisejs";
+
 type SongDirContents = {
   names: string[];
   dirNames: string[];
@@ -10,7 +12,13 @@ export default () => ({
   selected: -1,
   audioSource: <HTMLAudioElement | null>null,
 
+  marchValue: 0,
+  backgroundSimplex: Array<number>(25 * 25).fill(0),
+  noise: new Noise(),
+
   async init() {
+    setInterval(() => this.animateBackground(), 1000 / 30);
+
     const result = await fetch("http://localhost:3000/song-list");
     this.contents = await result.json();
 
@@ -42,5 +50,16 @@ export default () => ({
     this.audioSource = new Audio(`/songs/${this.contents.wavs[this.selected]}`);
     await this.audioSource.play();
     this.audioSource.currentTime = this.audioSource.duration / 4;
+  },
+
+  animateBackground() {
+    for (let i = 0; i < this.backgroundSimplex.length; i++) {
+      const x = i % 25;
+      const y = Math.floor(i / 25);
+      this.backgroundSimplex[i] =
+        (this.noise.simplex2(x, y + this.marchValue) + 1) / 2;
+    }
+
+    this.marchValue += 0.005;
   },
 });

@@ -1,9 +1,41 @@
-:root {
-  --primary: #02b759;
-  --secondary: #76c49c;
-  --common: white;
-  --common-tint: #dfdfdf;
-  --common-tint-dark: #6f6f6f;
-  --text: black;
-  --text-tint: #242424;
+body {
+  background-color: transparent;
+}
+
+.background-simplex {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 150%;
+  height: 150%;
+  background-color: var(--text-tint);
+  z-index: -1;
+  transform: translate(-60%, -50%) rotate(10deg);
+}
+
+.background-simplex .node {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-radius: 100%;
+}
+
+.track-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.track {
+  color: var(--secondary);
+  background-color: transparent;
+  font-size: 1.5rem;
+}
+
+.selected-track {
+  position: relative;
+  font-weight: bold;
+  font-size: 1.7rem;
 }

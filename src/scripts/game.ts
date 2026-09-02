@@ -1,4 +1,5 @@
 import { IntervalTree, type DataInterval } from "node-interval-tree";
+import { Noise } from "noisejs";
 
 const RECORDING = false;
 const STARTING_AT = 0;
@@ -48,16 +49,14 @@ class Note {
     const leftPercent = (this.key / allowedKeysTuple.length) * 100;
     const leftPixels = (50 * this.key) / (allowedKeysTuple.length - 1);
     const background = (): string => {
-      if (this.tooEarly) return "red";
-      else if (this.successDown && this.successUp) return "lime";
-      return "";
+      if (this.tooEarly) return "var(--error)";
+      else if (this.successDown && this.successUp) return "var(--primary)";
+      return "var(--common-tint-dark)";
     };
     return `
       bottom: ${bottom}px;
       left: calc(${leftPercent}% + ${leftPixels}px);
       height: ${height}px;
-      border-bottom-color: ${this.successDown ? "lime" : "red"};
-      border-top-color: ${this.successUp ? "lime" : "red"};
       background-color: ${background()};
     `;
   }
@@ -89,11 +88,15 @@ export default () => ({
   ] as const,
   zoom: 3,
 
+  marchValue: 0,
+  backgroundSimplex: Array<number>(25 * 25).fill(0),
+  noise: new Noise(),
+
   async init() {
+    setInterval(() => this.animateBackground(), 1000 / 30);
     this.notes = await this.getNotes();
 
     const confirmFn = (e: KeyboardEvent) => {
-      if (e.key != "Enter") return;
       this.confirmStart();
       this.confirmedStart = true;
       const path = document.location.pathname;
@@ -227,6 +230,10 @@ export default () => ({
     } else this.combo = 1;
   },
 
+  isPressing(key: AllowedKeys): boolean {
+    return this.keyRecordMap[key] != undefined;
+  },
+
   async getNotes(): Promise<Note[]> {
     const path = document.location.pathname;
     const songName = path.slice(path.lastIndexOf("/") + 1);
@@ -269,5 +276,16 @@ export default () => ({
       .then((r) => r.text())
       .then((text) => console.log(text));
     document.location.reload();
+  },
+
+  animateBackground() {
+    for (let i = 0; i < this.backgroundSimplex.length; i++) {
+      const x = i % 25;
+      const y = Math.floor(i / 25);
+      this.backgroundSimplex[i] =
+        (this.noise.simplex2(x, y + this.marchValue) + 1) / 2;
+    }
+
+    this.marchValue += 0.005;
   },
 });
