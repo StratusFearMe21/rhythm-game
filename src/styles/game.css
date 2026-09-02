@@ -80,20 +80,26 @@
   width: 400px;
   height: 350px;
   padding: 30px;
-  background-color: var(--common);
+  border: 2px solid var(--secondary);
+  background-color: var(--text-tint);
   z-index: 100;
 }
 
-.game-over-overlay h1,
+.game-over-overlay h1 {
+  text-align: center;
+  color: var(--primary);
+}
+
 .game-over-overlay pre {
   text-align: center;
+  color: var(--common);
 }
 
 .game-over-overlay a {
   display: block;
   text-align: center;
   font-weight: bold;
-  color: var(--text);
+  color: var(--common);
 }
 
 .game-over-overlay-background {
