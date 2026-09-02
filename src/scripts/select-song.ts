@@ -19,7 +19,7 @@ export default () => ({
   async init() {
     setInterval(() => this.animateBackground(), 1000 / 30);
 
-    const result = await fetch("http://localhost:3000/song-list");
+    const result = await fetch("/song-list");
     this.contents = await result.json();
 
     window.addEventListener("keydown", (e) => this.selectTrack(e.key));
@@ -38,7 +38,7 @@ export default () => ({
         this.selected = Math.max(0, this.selected - 1);
         break;
       case "Enter":
-        document.location.href = `http://localhost:3000/game/${this.contents.dirNames[this.selected]}`;
+        document.location.href = `/game/${this.contents.dirNames[this.selected]}`;
         return;
       default:
         return;

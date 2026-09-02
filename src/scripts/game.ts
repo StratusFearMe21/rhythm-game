@@ -237,9 +237,7 @@ export default () => ({
   async getNotes(): Promise<Note[]> {
     const path = document.location.pathname;
     const songName = path.slice(path.lastIndexOf("/") + 1);
-    const result = await fetch(
-      `http://localhost:3000/songs/${songName}/${songName}.rhythm`,
-    );
+    const result = await fetch(`/songs/${songName}/${songName}.rhythm`);
     if (!result.ok) return [];
 
     let notes: Note[] = [];
@@ -269,7 +267,7 @@ export default () => ({
   },
 
   async uploadRecords() {
-    await fetch("http://localhost:3000/rhythm", {
+    await fetch("/rhythm", {
       method: "POST",
       body: this.allRecords.reduce((prev, cur) => prev + cur),
     })

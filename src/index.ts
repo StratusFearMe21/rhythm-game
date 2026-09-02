@@ -1,47 +1,34 @@
-import { readdir } from "node:fs/promises";
+import { SongStorage } from "./song-storage";
+import indexHTML from "./pages/index.html";
+import gameHTML from "./pages/game.html";
 
-type SongDirContents = {
-  names: string[];
-  dirNames: string[];
-  wavs: string[];
-  rhythms: string[];
-};
-
-const songDir = await readdir("src/songs", { recursive: true });
-const songs: SongDirContents = {
-  names: [],
-  dirNames: [],
-  wavs: [],
-  rhythms: [],
-};
-songDir.forEach((dir) => {
-  if (dir.endsWith(".wav")) songs.wavs.push(dir);
-  else if (dir.endsWith(".rhythm")) songs.rhythms.push(dir);
-  else {
-    songs.names.push(titleCase(dir));
-    songs.dirNames.push(dir);
-  }
-});
-songs.names = songs.names.sort();
-songs.dirNames = songs.dirNames.sort();
-songs.wavs = songs.wavs.sort();
-songs.rhythms = songs.rhythms.sort();
+const songStorage = SongStorage.fromEnvironment();
 
 const server = Bun.serve({
-  port: 3000,
+  port: Number(Bun.env["PORT"] ?? Bun.env["FUNCTIONS_CUSTOMHANDLER_PORT"] ?? 3000),
   routes: {
-    "/": () => new Response(Bun.file("src/pages/index.html")),
-    "/game/:song": () => new Response(Bun.file("src/pages/game.html")),
+    "/": indexHTML,
+    "/game/:song": gameHTML,
     "/song-list": async () => {
-      return Response.json(songs);
+      try {
+        return Response.json(await songStorage.getCatalog());
+      } catch (error) {
+        console.error("Unable to list songs from S3", error);
+        return Response.json(
+          { error: "Song storage is unavailable" },
+          { status: 502 },
+        );
+      }
     },
-    "/public/*.js": (req) => {
-      const url = new URL(req.url);
-      return new Response(Bun.file(`.${url.pathname}`));
+    "/songs/*": (req) => {
+      try {
+        const pathname = new URL(req.url).pathname;
+        const key = decodeURIComponent(pathname.slice("/songs/".length));
+        return Response.redirect(songStorage.getSignedSongUrl(key), 302);
+      } catch {
+        return new Response("Invalid song path", { status: 400 });
+      }
     },
-    "/styles/*.css": genericResource,
-    "/assets/*": genericResource,
-    "/songs/*": genericResource,
     "/rhythm": {
       POST: async (req) => {
         const body = await req.text();
@@ -54,15 +41,3 @@ const server = Bun.serve({
 });
 
 console.log(`Running on ${server.url}`);
-
-function genericResource(req: Request): Response {
-  const url = new URL(req.url);
-  return new Response(Bun.file(`src${url.pathname}`));
-}
-
-function titleCase(name: string): string {
-  return name
-    .split("-")
-    .map((word) => word.slice(0, 1).toUpperCase() + word.slice(1))
-    .reduce((prev, cur) => `${prev} ${cur}`);
-}

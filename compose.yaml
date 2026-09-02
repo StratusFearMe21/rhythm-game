@@ -1,0 +1,67 @@
+services:
+  garage:
+    image: dxflrs/garage:v2.3.0
+    command: ["/garage", "server", "--single-node", "--default-bucket"]
+    environment:
+      GARAGE_CONFIG_FILE: /etc/garage.toml
+      GARAGE_DEFAULT_ACCESS_KEY: GK0123456789abcdef01234567
+      GARAGE_DEFAULT_SECRET_KEY: 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+      GARAGE_DEFAULT_BUCKET: rhythm-game
+    ports:
+      - "3900:3900"
+    volumes:
+      - ./garage/garage.toml:/etc/garage.toml:ro
+      - garage-metadata:/var/lib/garage/meta
+      - garage-data:/var/lib/garage/data
+    healthcheck:
+      test: ["CMD", "/garage", "status"]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+      start_period: 5s
+
+  garage-seed:
+    image: amazon/aws-cli:2.27.49
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        aws s3api put-bucket-cors \
+          --bucket "$${S3_BUCKET}" \
+          --cors-configuration file:///garage/cors.json
+        aws s3 sync /song-data "s3://$${S3_BUCKET}"
+    environment:
+      AWS_ACCESS_KEY_ID: GK0123456789abcdef01234567
+      AWS_SECRET_ACCESS_KEY: 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+      AWS_DEFAULT_REGION: garage
+      AWS_ENDPOINT_URL: http://garage:3900
+      AWS_EC2_METADATA_DISABLED: "true"
+      S3_BUCKET: rhythm-game
+    volumes:
+      - ./garage:/garage:ro
+      - ./song-data:/song-data:ro
+    depends_on:
+      garage:
+        condition: service_healthy
+    restart: "no"
+
+  app:
+    build:
+      context: .
+      dockerfile: dockerfile
+    environment:
+      PORT: "3000"
+      S3_BUCKET: rhythm-game
+      S3_REGION: garage
+      S3_ENDPOINT: http://garage:3900
+      S3_PUBLIC_ENDPOINT: http://localhost:3900
+      S3_ACCESS_KEY_ID: GK0123456789abcdef01234567
+      S3_SECRET_ACCESS_KEY: 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+    ports:
+      - "3000:3000"
+    depends_on:
+      garage-seed:
+        condition: service_completed_successfully
+
+volumes:
+  garage-metadata:
+  garage-data:
