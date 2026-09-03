@@ -10,6 +10,8 @@
     "round": "bun run src/round-rhythm.ts"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.0.0",
+    "@google-cloud/storage": "^7.0.0",
     "@types/noisejs": "^2.1.0",
     "alpinejs": "^3.16.1",
     "node-interval-tree": "^2.1.2",

@@ -24,7 +24,7 @@ const server = Bun.serve({
       try {
         const pathname = new URL(req.url).pathname;
         const key = decodeURIComponent(pathname.slice("/songs/".length));
-        return Response.redirect(songStorage.getSignedSongUrl(key), 302);
+        return Response.redirect(songStorage.getPublicSongUrl(key), 302);
       } catch {
         return new Response("Invalid song path", { status: 400 });
       }
@@ -32,9 +32,8 @@ const server = Bun.serve({
     "/rhythm": {
       POST: async (req) => {
         const body = await req.text();
-        const filePath = `dev/take-${new Date().toISOString()}.rhythm`;
-        await Bun.write(Bun.file(filePath), body);
-        return new Response(`Saved to "${filePath}"`);
+        const key = await songStorage.saveRecording(body);
+        return new Response(`Saved to "${key}"`);
       },
     },
   },

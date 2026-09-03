@@ -19,7 +19,7 @@ RUN bun build \
     --target bun \
 	src/index.ts
 
-FROM oven/bun
+FROM oven/bun AS app
 
 WORKDIR /app
 
@@ -32,3 +32,12 @@ ENV NODE_ENV=production
 CMD ["bun", "run", "./index.js"]
 
 EXPOSE 3000
+
+FROM app AS lambda
+
+COPY --from=public.ecr.aws/awsguru/aws-lambda-adapter:1.0.1 /lambda-adapter /opt/extensions/lambda-adapter
+
+ENV PORT=3000
+ENV AWS_LWA_PORT=3000
+
+FROM app AS runtime
