@@ -1,4 +1,4 @@
-import { SongStorage } from "./song-storage";
+import { InvalidSongObjectKeyError, SongStorage } from "./song-storage";
 import indexHTML from "./pages/index.html";
 import gameHTML from "./pages/game.html";
 
@@ -20,13 +20,17 @@ const server = Bun.serve({
         );
       }
     },
-    "/songs/*": (req) => {
+    "/songs/*": async (req) => {
       try {
         const pathname = new URL(req.url).pathname;
         const key = decodeURIComponent(pathname.slice("/songs/".length));
-        return Response.redirect(songStorage.getPublicSongUrl(key), 302);
-      } catch {
-        return new Response("Invalid song path", { status: 400 });
+        return Response.redirect(await songStorage.getSignedSongUrl(key), 302);
+      } catch (error) {
+        if (error instanceof InvalidSongObjectKeyError || error instanceof URIError) {
+          return new Response("Invalid song path", { status: 400 });
+        }
+        console.error("Unable to sign song URL", error);
+        return new Response("Song storage is unavailable", { status: 502 });
       }
     },
     "/rhythm": {

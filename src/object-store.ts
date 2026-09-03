@@ -6,7 +6,10 @@ import {
   PutObjectCommand,
   S3Client,
 } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { Storage } from "@google-cloud/storage";
+
+const SIGNED_URL_TTL_SECONDS = 15 * 60;
 
 export interface ObjectStore {
   exists(key: string): Promise<boolean>;
@@ -15,6 +18,7 @@ export interface ObjectStore {
   writeIfAbsent(key: string, value: Uint8Array | string, contentType: string): Promise<boolean>;
   delete(key: string): Promise<void>;
   list(prefix?: string): Promise<string[]>;
+  getSignedReadUrl(key: string): Promise<string>;
 }
 
 export function createObjectStore(name: string): ObjectStore {
@@ -102,6 +106,14 @@ class AwsObjectStore implements ObjectStore {
     } while (token);
     return keys;
   }
+
+  getSignedReadUrl(key: string) {
+    return getSignedUrl(
+      this.client,
+      new GetObjectCommand({ Bucket: this.bucket, Key: key }),
+      { expiresIn: SIGNED_URL_TTL_SECONDS },
+    );
+  }
 }
 
 class GcpObjectStore implements ObjectStore {
@@ -129,6 +141,13 @@ class GcpObjectStore implements ObjectStore {
   async list(prefix = "") {
     return (await this.bucket.getFiles({ prefix, autoPaginate: true }))[0].map((file) => file.name);
   }
+  async getSignedReadUrl(key: string) {
+    return (await this.bucket.file(key).getSignedUrl({
+      version: "v4",
+      action: "read",
+      expires: Date.now() + SIGNED_URL_TTL_SECONDS * 1000,
+    }))[0];
+  }
 }
 
 function statusCode(error: unknown): number | undefined {
@@ -142,4 +161,3 @@ function statusCode(error: unknown): number | undefined {
 function errorName(error: unknown): string | undefined {
   return error && typeof error === "object" ? (error as { name?: string }).name : undefined;
 }
-
