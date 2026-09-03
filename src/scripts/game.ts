@@ -1,5 +1,5 @@
 import { IntervalTree, type DataInterval } from "node-interval-tree";
-import Noise from "noisejs";
+import { Noise } from "noisejs";
 
 const RECORDING = false;
 const STARTING_AT = 174;
