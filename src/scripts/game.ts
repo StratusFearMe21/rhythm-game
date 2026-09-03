@@ -2,7 +2,7 @@ import { IntervalTree, type DataInterval } from "node-interval-tree";
 import { Noise } from "noisejs";
 
 const RECORDING = false;
-const STARTING_AT = 174;
+const STARTING_AT = 0;
 
 const allowedKeysTuple = ["s", "f", "j", "l"] as const;
 type AllowedKeys = (typeof allowedKeysTuple)[number];
