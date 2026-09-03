@@ -31,21 +31,36 @@ export function createObjectStore(name: string): ObjectStore {
 
 class AwsObjectStore implements ObjectStore {
   private readonly client: S3Client;
+  private readonly signingClient: S3Client;
 
   constructor(private readonly bucket: string) {
+    const region = Bun.env["AWS_REGION"] ?? Bun.env["S3_REGION"] ?? "us-west-2";
+    const endpoint = Bun.env["S3_ENDPOINT"];
+    const publicEndpoint = Bun.env["S3_PUBLIC_ENDPOINT"];
+    const credentials =
+      Bun.env["S3_ACCESS_KEY_ID"] && Bun.env["S3_SECRET_ACCESS_KEY"]
+        ? {
+            accessKeyId: Bun.env["S3_ACCESS_KEY_ID"],
+            secretAccessKey: Bun.env["S3_SECRET_ACCESS_KEY"],
+          }
+        : undefined;
+
     this.client = new S3Client({
-      region: Bun.env["AWS_REGION"] ?? Bun.env["S3_REGION"] ?? "us-west-2",
+      region,
       followRegionRedirects: true,
-      endpoint: Bun.env["S3_ENDPOINT"],
-      forcePathStyle: Bun.env["S3_ENDPOINT"] !== undefined,
-      credentials:
-        Bun.env["S3_ACCESS_KEY_ID"] && Bun.env["S3_SECRET_ACCESS_KEY"]
-          ? {
-              accessKeyId: Bun.env["S3_ACCESS_KEY_ID"],
-              secretAccessKey: Bun.env["S3_SECRET_ACCESS_KEY"],
-            }
-          : undefined,
+      endpoint,
+      forcePathStyle: endpoint !== undefined,
+      credentials,
     });
+    this.signingClient = publicEndpoint
+      ? new S3Client({
+          region,
+          followRegionRedirects: true,
+          endpoint: publicEndpoint,
+          forcePathStyle: publicEndpoint !== undefined,
+          credentials,
+        })
+      : this.client;
   }
 
   async exists(key: string) {
@@ -109,7 +124,7 @@ class AwsObjectStore implements ObjectStore {
 
   getSignedReadUrl(key: string) {
     return getSignedUrl(
-      this.client,
+      this.signingClient,
       new GetObjectCommand({ Bucket: this.bucket, Key: key }),
       { expiresIn: SIGNED_URL_TTL_SECONDS },
     );
