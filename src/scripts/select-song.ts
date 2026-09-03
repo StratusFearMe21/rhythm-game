@@ -1,4 +1,4 @@
-import { Noise } from "noisejs";
+import Noise from "noisejs";
 
 type SongDirContents = {
   names: string[];

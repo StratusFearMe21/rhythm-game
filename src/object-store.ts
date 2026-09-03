@@ -17,9 +17,8 @@ export interface ObjectStore {
   list(prefix?: string): Promise<string[]>;
 }
 
-export function createObjectStore(): ObjectStore {
+export function createObjectStore(name: string): ObjectStore {
   const provider = (Bun.env["CLOUD_PROVIDER"] ?? "aws").toLowerCase();
-  const name = Bun.env["PORTAL_STORE_NAME"] ?? Bun.env["S3_BUCKET"];
   if (!name) throw new Error("PORTAL_STORE_NAME is required");
   if (provider === "aws") return new AwsObjectStore(name);
   if (provider === "gcp") return new GcpObjectStore(name);

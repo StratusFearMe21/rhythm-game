@@ -1,5 +1,5 @@
 import { IntervalTree, type DataInterval } from "node-interval-tree";
-import { Noise } from "noisejs";
+import Noise from "noisejs";
 
 const RECORDING = false;
 const STARTING_AT = 174;
@@ -96,7 +96,7 @@ export default () => ({
     setInterval(() => this.animateBackground(), 1000 / 30);
     this.notes = await this.getNotes();
 
-    const confirmFn = (e: KeyboardEvent) => {
+    const confirmFn = (_: KeyboardEvent) => {
       this.confirmStart();
       this.confirmedStart = true;
       const path = document.location.pathname;
