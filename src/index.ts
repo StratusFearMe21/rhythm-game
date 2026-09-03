@@ -8,6 +8,7 @@ const server = Bun.serve({
   port: Number(Bun.env["PORT"] ?? Bun.env["FUNCTIONS_CUSTOMHANDLER_PORT"] ?? 3000),
   routes: {
     "/": indexHTML,
+    "/index.html": indexHTML,
     "/game/:song": gameHTML,
     "/song-list": async () => {
       try {
